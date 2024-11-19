@@ -7,8 +7,10 @@ import numpy as np
 from sklearn.metrics import adjusted_mutual_info_score as AMI
 from sklearn.metrics import adjusted_rand_score as ARI
 from sklearn.metrics import normalized_mutual_info_score as NMI
-from sklearn.metrics import normalized_mutual_info_score, cohen_kappa_score, accuracy_score
+from sklearn.metrics import normalized_mutual_info_score, cohen_kappa_score, accuracy_score, f1_score
 from munkres import Munkres
+import numpy as np
+
 
 def print_log(message, file_name='./log.txt'):
     print(message)
@@ -85,12 +87,81 @@ def Accurry(true_labels, predicted_labels):
     # 计算准确率
     accuracy = sum(mapped_predicted_labels == true_labels) / len(true_labels)
     
-    return accuracy
+    return accuracy,mapped_predicted_labels
 
-def print_mess(labels,labels_true,file_name='./log.txt'):
+
+def F1Score(true_labels, predicted_labels, method):
+    # 获取唯一的类别标签
+    unique_labels = np.unique(true_labels)
+    n_classes = len(unique_labels)
+
+    # 初始化精度、召回率和 F1 分数数组
+    precision = np.zeros(n_classes)
+    recall = np.zeros(n_classes)
+    f1_score = np.zeros(n_classes)
+
+    # 计算每个类别的 TP, FP, FN
+    for i in range(n_classes):
+        class_label = unique_labels[i]
+
+        TP = np.sum((true_labels == class_label) & (predicted_labels == class_label))
+        FP = np.sum((true_labels != class_label) & (predicted_labels == class_label))
+        FN = np.sum((true_labels == class_label) & (predicted_labels != class_label))
+
+        # 计算 Precision 和 Recall
+        if TP + FP > 0:
+            precision[i] = TP / (TP + FP)
+        else:
+            precision[i] = 0
+
+        if TP + FN > 0:
+            recall[i] = TP / (TP + FN)
+        else:
+            recall[i] = 0
+
+        # 计算 F1 Score
+        if precision[i] + recall[i] > 0:
+            f1_score[i] = 2 * (precision[i] * recall[i]) / (precision[i] + recall[i])
+        else:
+            f1_score[i] = 0
+
+    # 根据方法选择输出 Macro F1 或 Micro F1
+    if method.lower() == 'macro':
+        # 计算 Macro F1
+        f1_score = np.mean(f1_score)
+    elif method.lower() == 'micro':
+        # 计算 Micro F1
+        total_TP = np.sum(true_labels == predicted_labels)
+        total_FP = np.sum((true_labels != predicted_labels) & (predicted_labels != 0))
+        total_FN = np.sum((true_labels != predicted_labels) & (true_labels != 0))
+
+        if total_TP + total_FP > 0:
+            micro_precision = total_TP / (total_TP + total_FP)
+        else:
+            micro_precision = 0
+
+        if total_TP + total_FN > 0:
+            micro_recall = total_TP / (total_TP + total_FN)
+        else:
+            micro_recall = 0
+
+        if micro_precision + micro_recall > 0:
+            f1_score = 2 * (micro_precision * micro_recall) / (micro_precision + micro_recall)
+        else:
+            f1_score = 0
+    else:
+        raise ValueError("Invalid method. Choose either 'macro' or 'micro'.")
+
+    return f1_score
+
+
+def print_mess(labels,labels_true,file_name='./log.txt',pre_mess=''):
     ami = AMI(labels_true, labels)
     ari = ARI(labels_true, labels)
     nmi = NMI(labels_true, labels)
-    acc = Accurry(labels_true, labels)  
-    print_log(' nmi:{:.4f},  acc:{:.4f}, ami:{:.4f} ari:{:.4f}'.format(nmi,acc,ami,ari), file_name=file_name)
-    return nmi,acc,ami,ari
+    acc,mapped_predicted_labels = Accurry(labels_true, labels)
+    F1 = f1_score(labels_true, mapped_predicted_labels,average='weighted')
+    F1_macro = F1Score(labels_true, mapped_predicted_labels, 'macro')
+
+    print_log(pre_mess + ' nmi:{:.4f},  acc:{:.4f}, ami:{:.4f} ari:{:.4f} F1:{:.4f},F1_macro:{:.4f}'.format(nmi,acc,ami,ari,F1,F1_macro), file_name=file_name)
+    return nmi,acc,ami,ari,F1,F1_macro

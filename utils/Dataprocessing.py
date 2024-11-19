@@ -173,110 +173,18 @@ def get_datasets(file_name, n_samples =1500, seed=170):
     elif file_name == 'blobs':
         X, label_true = datasets.make_blobs(n_samples=n_samples, random_state=seed)
 
-    elif file_name == 'd1':
-        X, label_true = datasets.make_blobs(n_samples=n_samples, random_state=seed,centers=10,cluster_std=[0.2,0.3,0.4,0.5, 1,1.5,2,2.5,3,3.5])
-    elif file_name == 'd2':
-        X_blob1, label_1 = datasets.make_blobs(n_samples=500, centers=[(-8, 0)], cluster_std=[1.5])
-        transformation = [[0.8, -0.8], [-0.4, 0.8]]
-        X_blob1 = np.dot(X_blob1, transformation)
-        # 生成两个球形簇
-        X_blob2, label_2 = datasets.make_blobs(n_samples=200, centers=[(-2, 2)], cluster_std=[1])
-        X_blob3, label_3 = datasets.make_blobs(n_samples=100, centers=[(2, -2)], cluster_std=[1])
-        X = np.concatenate((X_blob1, X_blob2, X_blob3), axis=0)
-        label_true = np.concatenate((label_1, label_2, label_3))
     elif file_name == 'no_structure':
         X, label_true = datasets.make_blobs(n_samples=n_samples, random_state=seed)
         rng = np.random.RandomState(seed)
         X = rng.rand(n_samples, 2)
-    elif  file_name == 'R15':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif  file_name == 's3':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'Flame':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'banana-ball':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'smile1':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'Spiral':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'iris':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'seeds':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-        
-    elif file_name == 'parkinsons':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'Aggregation':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'jain':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'mnist_2D':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'mnist_784':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'MFFCCs':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'page-blocks':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'segmentation':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'letter':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'ecoli':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'phoneme':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'banknote':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'dermatology':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'CNAE-9':
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
-    elif file_name == 'USPS':
-        DATA_File = 'D:/data/数据集/' + file_name + '.mat'
+
+    elif file_name in ['USPS','MNIST','PenDigits','Optdigits','emnist-letter','emnist-digits','Covtype''Balanced','Byclass']:
+        DATA_File = './datasets/' + file_name + '.mat'
         data = scio.loadmat(DATA_File)
         X = data['fea']
         label_true = data['gnd']
-        X = X.toarray()
         label_true = label_true.flatten()
 
-    elif file_name in ['PenDigits','Optdigits','emnist-letter','emnist-mnist','emnist-digits','Covtype''Balanced','Byclass']:
-        DATA_File = 'D:/data/数据集/' + file_name + '.mat'
-        data = scio.loadmat(DATA_File)
-        X = data['fea']
-        label_true = data['gnd']
-        # X = X.toarray()
-        label_true = label_true.flatten()
-
-    elif file_name == 'Glass':
-        glass_identification = fetch_ucirepo(id=42) 
-        X = glass_identification.data.features 
-        label_true = glass_identification.data.targets 
-        X = X.to_numpy()
-        label_true = label_true.to_numpy().flatten()
     elif file_name == 'mnsit_8m':
         print(file_name)
         files_Name = ['mnist1q.mat','mnist2q.mat',
@@ -300,55 +208,9 @@ def get_datasets(file_name, n_samples =1500, seed=170):
             else:
                 X = np.concatenate((X,X_), axis=0)
                 label_true = np.concatenate((label_true,label_true_))
-            
-    else:
-        file_name = 's2'
-        DATA_File = 'D:/data/数据集/' + file_name + '.csv'
-        X, label_true = get_data(DATA_File)
+
     X = X.astype(np.float64)
     return X, label_true
-
-
-def prepare_data_hsi(img_path, gt_path):
-
-        if img_path[-3:] == 'mat':
-
-            import scipy.io as sio
-            img_mat = sio.loadmat(img_path)
-            gt_mat = sio.loadmat(gt_path)
-            # print(type(gt_mat),gt_mat.keys())
-            img_keys = img_mat.keys()
-            gt_keys = gt_mat.keys()
-            img_key = [k for k in img_keys if k != '__version__' and k != '__header__' and k != '__globals__']
-            gt_key = [k for k in gt_keys if k != '__version__' and k != '__header__' and k != '__globals__']
-
-            return img_mat.get(img_key[0]).astype('float64'), gt_mat.get(gt_key[0]).astype('int8')
-
-        else:
-            import spectral as spy
-            img = spy.open_image(img_path).load()
-            gt = spy.open_image(gt_path)
-            a = spy.principal_components()
-            a.transform()
-            return img, gt.read_band(0)
-
-def prepare_data_hsi_h5py(img_path, gt_path):
-
-        import h5py
-        img_mat = h5py.File(img_path, 'r')
-
-        # gt_mat = h5py.File(gt_path, 'r')
-        import scipy.io as sio
-        # img_mat = sio.loadmat(img_path)
-        gt_mat = sio.loadmat(gt_path)
-        img_keys = img_mat.keys()
-        gt_keys = gt_mat.keys()
-        img_key = [k for k in img_keys if k != '__version__' and k != '__header__' and k != '__globals__']
-        gt_key = [k for k in gt_keys if k != '__version__' and k != '__header__' and k != '__globals__']
-        # print(gt_key[0], )
-        gt = gt_mat.get(gt_key[0])['gt'][0][0]
-
-        return np.array(img_mat.get(img_key[0])).astype('float64').T, gt.astype('int8')
 
 
 def standardize_label(y):
