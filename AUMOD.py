@@ -223,7 +223,10 @@ class AUMOD:
 
     def ATG_KM(self, X, n_clusters):
         self.n_ = X.shape[0]
+        # G^O Construction
         observers, Z_O, row, col = self.calculate_AUMOD(X)
+
+        # (G_P)^O Construction
         o = observers.shape[0]
         G_O = np.full((o, o), 0.0)
         Z_O = Z_O.toarray()
@@ -237,8 +240,11 @@ class AUMOD:
         temp = (temp + temp.T) / 2
         G_O = temp
         np.fill_diagonal(G_O, np.max(G_O))
-        centers_indices, Y_O = self.km_iters_sim(G_O, n_clusters=n_clusters, n_iters=20, random_state=None)
 
+        # K-MEANS on (G_P)^O
+        centers_indices, Y_O = self.km_iters_sim(G_O, n_clusters=n_clusters, n_iters=20, random_state=None)
+        
+        # assign non-observers
         labels = self.assign(X, observers, Y_O)
         self.Y_O = Y_O
         self.labels_ = labels
